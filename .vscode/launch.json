@@ -20,8 +20,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Aritz/Desktop/PAINTSHOT QT/Paintshot-roulette-cutre",
-      "program": "c:/Users/Aritz/Desktop/PAINTSHOT QT/Paintshot-roulette-cutre/build/Debug/outDebug",
+      "cwd": "c:/Users/Aritz/Desktop/CONCESIONARI",
+      "program": "c:/Users/Aritz/Desktop/CONCESIONARI/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
