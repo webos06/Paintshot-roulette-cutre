@@ -6,10 +6,8 @@
 #include <fstream>
 #include <conio.h>
 #include <windows.h>
-
 using namespace std;
 
-// --- Estructuras ---
 struct EntradaRanking {
     string nombre;
     int puntuacion;
@@ -22,35 +20,34 @@ struct Jugador {
     int dinero;
 };
 
-// --- Prototipos ---
 int generarAleatorio(int min, int max);
 void esperar(int milisegundos);
 int leerEntrada(int min, int max);
 void lineaSeparadora();
 
-// --- Pantalla de carga y Visuales ---
+//Estetica
 void mostrar_ascii();
 void esperar_tecla();
 void limpiar_pantalla();
 
-// --- Gestión de Archivos y Ranking ---
+//Gestion de almacenamiento y ranking, no tocar.
 bool guardarPuntuacion(string nombre, int dinero); 
 vector<EntradaRanking> leerRanking();
 int mostrarRanking(); 
 
-// --- Lógica del Juego ---
+//Todas las funciones para jugar el juego, avisar de cambio.
 int calcularTotalBalas(int fase, int recargas);
 int cargarRecamara(vector<int> & recamara, int fase, bool doubleOrNothing); 
 int darObjetos(vector<int> & objetos, int fase); 
 void contarBalasRestantes(const vector<int> & recamara, int indiceActual, int & rojas, int & azules, int & doradas);
 
-// --- Combate y Turnos ---
-int procesarDisparo(int bala, int objetivo, int& danoExtra, bool esJugador, int & vidaAtacante, int & vidaDefensor);
+// Dentro de la partida, turnos , disparos....
+int procesarDisparo(int bala, int objetivo, int & danoExtra, bool esJugador, int & vidaAtacante, int & vidaDefensor);
 int turnoBot(const vector<int> & recamara, int indiceActual, int vidaBot, int vidaJugador);
 int elegirObjetivo();
 int mostrarMenuTurno(int fase, const vector<int> & objetos, int rojas, int azules);
 
-// --- Control de Flujo ---
+//Control de entrada y de flujo, intentar no modificar nada.
 int mostrarEstado(string nombreJugador, int vidaJugador, int vidaBot, int fase, int rojas, int azules); 
 int jugarFase(Jugador & jugador, int fase, bool doubleOrNothing);
 int iniciarPartidaNueva(); 
@@ -153,34 +150,35 @@ void mostrar_ascii(){
 }
 
 bool guardarPuntuacion(string nombre, int dinero){
-    vector <EntradaRanking> ranking = leerRanking();
-    ranking.push_back({nombre, dinero});
+vector <EntradaRanking> ranking = leerRanking();
+ranking.push_back({nombre, dinero});
 
-    int n = ranking.size();
-    for(int i = 0; i < n - 1; i++){
-      for(int j = 0; j < n - i - 1; j++){
-         if(ranking[j].puntuacion < ranking[j + 1].puntuacion){
-           EntradaRanking auxiliar = ranking[j];
-            ranking[j] = ranking[j + 1];
-            ranking[j + 1] = auxiliar;}}}
+int n = ranking.size();
+   for(int i = 0; i < n - 1; i++){
+    for(int j = 0; j < n - i - 1; j++){
+       if(ranking[j].puntuacion < ranking[j + 1].puntuacion){
+        EntradaRanking auxiliar = ranking[j];
+        ranking[j] = ranking[j + 1];
+        ranking[j + 1] = auxiliar;}}}
     
     if(ranking.size() > 10) ranking.resize(10);
-    ofstream archivo("ranking.txt");
-    if(archivo.is_open()){
+      ofstream archivo("ranking.txt");
+      if(archivo.is_open()){
         for(int i = 0; i < ranking.size(); i++){
-           archivo << ranking[i].nombre << " " << ranking[i].puntuacion << "\n";}
-           archivo.close();
-           return true;}
+        archivo << ranking[i].nombre << " " << ranking[i].puntuacion << "\n";}
+        archivo.close();
+        return true;}
 
-    cout << "Error: No se pudo guardar el ranking." << "\n";
-    return false; 
+cout << "Error: No se pudo guardar el ranking." << "\n";
+return false; 
 }
 
 vector<EntradaRanking> leerRanking(){
-    vector<EntradaRanking> ranking;
-    ifstream archivo("ranking.txt");
-    string nombre;
-    int pts;
+
+vector<EntradaRanking> ranking;
+ifstream archivo("ranking.txt");
+string nombre;
+int pts;
     
     if(archivo.is_open()){
       while(archivo >> nombre >> pts){
@@ -217,7 +215,7 @@ int cargarRecamara(vector <int> & recamara, int fase, bool doubleOrNothing){
     int balasRojas = generarAleatorio(minimo, tamano - minimo);
     int balasAzules = tamano - balasRojas;
     
-    if (doubleOrNothing && tamano > 2) balasRojas--; 
+    if(doubleOrNothing && tamano > 2) balasRojas--; 
 
     cout << "\n>> CARGANDO ESCOPETA..." << "\n";
     esperar(500);
@@ -225,16 +223,16 @@ int cargarRecamara(vector <int> & recamara, int fase, bool doubleOrNothing){
     esperar(300);
     cout << ">> " << balasAzules << " FOGUEO [AZULES]" << "\n";
     esperar(300);
-    if (doubleOrNothing && tamano > 2) cout << ">> 1 ESPECIAL [DORADA]" << "\n";
+    if(doubleOrNothing && tamano > 2) cout << ">> 1 ESPECIAL [DORADA]" << "\n";
     
     cout << ">> Insertando y barajando..." << "\n";
     esperar(1000);
     
-    for (int i = 0; i < balasRojas; i++) recamara.push_back(1);
-    for (int i = 0; i < balasAzules; i++) recamara.push_back(2);
-    if (doubleOrNothing && tamano > 2) recamara.push_back(3);
+    for(int i = 0; i < balasRojas; i++) recamara.push_back(1);
+    for(int i = 0; i < balasAzules; i++) recamara.push_back(2);
+    if(doubleOrNothing && tamano > 2) recamara.push_back(3);
     
-    for (int i = recamara.size() - 1; i > 0; i--) {
+    for(int i = recamara.size() - 1; i > 0; i--){
         int j = generarAleatorio(0, i);
         int auxiliar = recamara[i];
         recamara[i] = recamara[j];
@@ -244,7 +242,7 @@ int cargarRecamara(vector <int> & recamara, int fase, bool doubleOrNothing){
     return recamara.size(); 
 }
 
-void contarBalasRestantes(const vector <int> & recamara, int indiceActual, int& rojas, int& azules, int& doradas) {
+void contarBalasRestantes(const vector <int> & recamara, int indiceActual, int & rojas, int & azules, int & doradas) {
     rojas = 0;
     azules = 0;
     doradas = 0;
@@ -254,7 +252,7 @@ void contarBalasRestantes(const vector <int> & recamara, int indiceActual, int& 
         else if (recamara[i] == 3) doradas++;}
 }
 
-int darObjetos(vector<int>& objetos, int fase){
+int darObjetos(vector<int> & objetos, int fase){
     int totalDados = 0;
     cout << "Repartiendo objetos..." << "\n";
     esperar(500);
@@ -297,7 +295,7 @@ int maxOpcion;
     cout << "===================================" << "\n";
     cout << " Elige accion > ";
     
-    if (fase >= 2){
+    if(fase >= 2){
         maxOpcion = 5;} 
     else{
         maxOpcion = 1;}
@@ -307,8 +305,8 @@ int maxOpcion;
 
 int elegirObjetivo(){
     cout << "\n A quien apuntas?" << "\n";
-    cout << " [1] Al Dealer" << "\n";
-    cout << " [2] A ti mismo (Si es fogueo, repites turno)" << "\n";
+    cout << " [1] Al Bot" << "\n";
+    cout << " [2] A ti mismo (Si es de fogueo, repites turno)" << "\n";
     cout << " > ";
     return leerEntrada(1, 2);
 }
@@ -321,7 +319,7 @@ int procesarDisparo(int bala, int objetivo, int & danoExtra, bool esJugador, int
     
     if(bala == 1){ 
         int dano = 1 + danoExtra;
-        cout << " ¡BANG! Fuego real." << "\n";
+        cout << "PUUUUM PERDIGONES." << "\n";
         if (objetivo == 1){ 
              cout << " -> Impacto de " << dano << " de daño al objetivo." << "\n";
              vidaDefensor -= dano;
@@ -332,17 +330,17 @@ int procesarDisparo(int bala, int objetivo, int & danoExtra, bool esJugador, int
              resultado = 1;}} 
         
     else if(bala == 2){ 
-        cout << " *Click*... Bala de fogueo (Suerte)." << "\n";
+        cout << " *Click*... Bala de fogueo." << "\n";
         resultado = 0;} 
         
     else if(bala == 3){ 
         int dano = 3 + danoExtra;
         if(objetivo == 1){ 
-             cout << " ¡BOOM! Municion Dorada CRITICA." << "\n";
+             cout << " ¡BOOM! MUNICION DORADA QUE LOCURA." << "\n";
             vidaDefensor -= dano;
             resultado = 2;} 
         else{ 
-            cout << " *Brillo divino*... La bala dorada te cura 1 vida." << "\n";
+            cout << " *Vaya suerte*... La bala dorada te cura 1 vida." << "\n";
             vidaAtacante += 1;
             resultado = -1;}}
             
@@ -350,8 +348,8 @@ int procesarDisparo(int bala, int objetivo, int & danoExtra, bool esJugador, int
     return resultado;
 }
 
-int turnoBot(const vector<int>& recamara, int indiceActual, int vidaBot, int vidaJugador) {
-    cout << "PENSANDO JUGADA..";
+int turnoBot(const vector<int> & recamara, int indiceActual, int vidaBot, int vidaJugador) {
+    cout << "Preparando para ganarte...";
     esperar(1500); 
     cout << "\n"; 
 
@@ -373,13 +371,13 @@ int mostrarEstado(string nombreJugador, int vidaJugador, int vidaBot, int fase, 
     lineaSeparadora();
     cout << "       FASE " << fase << "  |  PENDIENTES: " << rojas << " R / " << azules << " A" << "\n";
     lineaSeparadora();
-    cout << "  " << nombreJugador << "\t\tVS\t\tDEALER" << "\n";
+    cout << "  " << nombreJugador << "\t\tVS\t\tBOT" << "\n";
     cout << "  VIDA: " << vidaJugador << "\t\t\t\tVIDA: " << vidaBot << "\n";
     lineaSeparadora();
     return 1; 
 }
 
-int jugarFase(Jugador& jugador, int fase, bool doubleOrNothing) {
+int jugarFase(Jugador & jugador, int fase, bool doubleOrNothing) {
 int vidaBot = 2 + fase;
 jugador.vida = 2 + fase; 
     
@@ -456,11 +454,11 @@ while(jugador.vida > 0 && vidaBot > 0){
         esperar(1000);}}} 
                 
     else{
-        cout << "\n   [TURNO DEL DEALER]" << "\n";
+        cout << "\n   [TURNO DEL BOT]" << "\n";
         int decisionBot = turnoBot(recamara, indiceActual, vidaBot, jugador.vida);
             
-        if (decisionBot == 1) cout << " >> Dealer te apunta a TI." << "\n";
-        else cout << " >> Dealer se apunta a SI MISMO." << "\n";
+        if (decisionBot == 1) cout << " >> BOT te apunta a TI." << "\n";
+        else cout << " >> BOT se apunta a SI MISMO." << "\n";
         esperar(1000);
 
         int objetivoReal;
@@ -469,7 +467,7 @@ while(jugador.vida > 0 && vidaBot > 0){
         procesarDisparo(recamara[indiceActual], objetivoReal, danoExtra, false, vidaBot, jugador.vida);
             
         if(recamara[indiceActual] == 2 && decisionBot == 2) {
-        cout << " >> Dealer obtiene turno extra." << "\n";
+        cout << " >> BOT obtiene turno extra." << "\n";
         esperar(1000);
         turnoJugador = false;}
     
